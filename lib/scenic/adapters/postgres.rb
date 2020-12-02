@@ -57,8 +57,12 @@ module Scenic
       # @param sql_definition The SQL schema for the view.
       #
       # @return [void]
-      def create_view(name, sql_definition)
-        execute "CREATE VIEW #{quote_table_name(name)} AS #{sql_definition};"
+      def create_view(name, sql_definition, with)
+        if with
+          execute "CREATE VIEW #{quote_table_name(name)} WITH(#{with}) AS #{sql_definition};"
+        else
+          execute "CREATE VIEW #{quote_table_name(name)} AS #{sql_definition};"
+        end
       end
 
       # Updates a view in the database.
