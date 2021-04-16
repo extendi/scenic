@@ -57,8 +57,12 @@ module Scenic
       # @param sql_definition The SQL schema for the view.
       #
       # @return [void]
-      def create_view(name, sql_definition)
-        execute "CREATE VIEW #{quote_table_name(name)} AS #{sql_definition};"
+      def create_view(name, sql_definition, with)
+        if with
+          execute "CREATE VIEW #{quote_table_name(name)} WITH(#{with}) AS #{sql_definition};"
+        else
+          execute "CREATE VIEW #{quote_table_name(name)} AS #{sql_definition};"
+        end
       end
 
       # Updates a view in the database.
@@ -77,9 +81,9 @@ module Scenic
       # @param sql_definition The SQL schema for the updated view.
       #
       # @return [void]
-      def update_view(name, sql_definition)
+      def update_view(name, sql_definition, with: nil)
         drop_view(name)
-        create_view(name, sql_definition)
+        create_view(name, sql_definition, with)
       end
 
       # Replaces a view in the database using `CREATE OR REPLACE VIEW`.
@@ -114,8 +118,12 @@ module Scenic
       # @param name The name of the view to drop
       #
       # @return [void]
-      def drop_view(name)
-        execute "DROP VIEW #{quote_table_name(name)};"
+      def drop_view(name, cascade: false)
+        if cascade
+          execute "DROP VIEW #{quote_table_name(name)} CASCADE;"
+        else
+          execute "DROP VIEW #{quote_table_name(name)};"
+        end
       end
 
       # Creates a materialized view in the database
